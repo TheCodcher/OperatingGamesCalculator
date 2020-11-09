@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30611.23
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpGameCalc", "OpGameCalc.csproj", "{A4231EEF-1D37-4AA0-ADC9-8068E0E0090E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A4231EEF-1D37-4AA0-ADC9-8068E0E0090E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4231EEF-1D37-4AA0-ADC9-8068E0E0090E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4231EEF-1D37-4AA0-ADC9-8068E0E0090E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4231EEF-1D37-4AA0-ADC9-8068E0E0090E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {17587E3F-0F4F-4362-BC00-9CCACE07F173}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,517 @@
+﻿<Window x:Class="OpGameCalc.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OpGameCalc"
+        mc:Ignorable="d"
+        Title="Simple calculator for the first lesson" Height="450" Width="800" MinHeight="450" MinWidth="800"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"
+        WindowStyle="None"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="0"
+            CornerRadius="2"
+            GlassFrameThickness="0"
+            NonClientFrameEdges="None"
+            ResizeBorderThickness="3"/>
+    </WindowChrome.WindowChrome>
+    <Window.Resources>
+        <Color x:Key="mainColor">OrangeRed</Color>
+        <Color x:Key="secondColor">AliceBlue</Color>
+        <SolidColorBrush x:Key="mainColorSolid" Color="{StaticResource mainColor}"/>
+        <SolidColorBrush x:Key="secondColorSolid" Color="{StaticResource secondColor}"/>
+        <materialDesign:PackIcon Kind="WindowRestore" x:Key="restoreWindowIcon" />
+        <materialDesign:PackIcon Kind="WindowMaximize" x:Key="maximizeWindowIcon" />
+        <local:RoundConverter x:Key="roundConverter"/>
+        <local:VisibleConverter x:Key="visibleConverter"/>
+
+        <Style x:Key="dataitem" TargetType="ContentControl">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border
+                            BorderBrush="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=BorderBrush}"
+                            BorderThickness="{Binding RelativeSource={RelativeSource Mode=TemplatedParent},Path=BorderThickness}"
+                            >
+                            <TextBlock
+                                Text="{Binding RelativeSource={RelativeSource Mode=TemplatedParent}, Path=DataContext,Converter={StaticResource roundConverter}}"
+                                Padding="0 7"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                >
+                            </TextBlock>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderBrush" Value="{StaticResource secondColorSolid}"/>
+            <Setter Property="BorderThickness" Value="0 0 0.2 0.2" />
+        </Style>
+
+        <Style x:Key="columndataitem" TargetType="ContentControl" BasedOn="{StaticResource dataitem}">
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource mainColor}" Offset="0"/>
+                        <GradientStop Color="{StaticResource mainColor}" Offset="0.9976"/>
+                        <GradientStop Color="{StaticResource secondColor}" Offset="0.9976"/>
+                        <GradientStop Color="{StaticResource secondColor}" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="0 0 0.2 0.4"/>
+        </Style>
+
+        <Style x:Key="rowdataitem" TargetType="ContentControl" BasedOn="{StaticResource dataitem}">
+            <Setter Property="BorderBrush">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,1" EndPoint="1,1">
+                        <GradientStop Color="{StaticResource secondColor}" Offset="0"/>
+                        <GradientStop Color="{StaticResource secondColor}" Offset="0.9972"/>
+                        <GradientStop Color="{StaticResource mainColor}" Offset="0.9972"/>
+                        <GradientStop Color="{StaticResource mainColor}" Offset="1"/>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="BorderThickness" Value="0 0 0.4 0.2"/>
+        </Style>
+
+        <Style x:Key="zerodataitem" TargetType="ContentControl" BasedOn="{StaticResource dataitem}">
+            <Setter Property="BorderBrush" Value="{StaticResource mainColorSolid}"/>
+            <Setter Property="BorderThickness" Value="0 0 0.4 0.4"/>
+        </Style>
+
+
+
+        <Style x:Key="smoothVisible" TargetType="FrameworkElement" 
+               >
+            <Style.Triggers>
+                <Trigger Property="Visibility" Value="Visible">
+                    <Trigger.EnterActions>
+                        <BeginStoryboard>
+                            <Storyboard>
+                                <DoubleAnimation 
+                                    Storyboard.TargetProperty="Opacity"
+                                    Duration="0:0:0.7"
+                                    From="0"
+                                    To="1"
+                                  >
+                                    <!--<DoubleAnimation.EasingFunction>
+                                        <BounceEase EasingMode="EaseOut"/>
+                                    </DoubleAnimation.EasingFunction>-->
+                                </DoubleAnimation>
+                                <!--<DoubleAnimation
+                                    Storyboard.TargetProperty="Height"
+                                    Duration="0:0:0.4"
+                                    From="0.0"
+                                    To="200"
+                                    >
+                                    <DoubleAnimation.EasingFunction>
+                                        <BounceEase EasingMode="EaseInOut"/>
+                                    </DoubleAnimation.EasingFunction>
+                                </DoubleAnimation>-->
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </Trigger.EnterActions>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <DockPanel>
+            <Grid
+                MouseLeftButtonDown="Grid_MouseLeftButtonDown"
+                    DockPanel.Dock="Top"
+                Background="{DynamicResource MaterialDesignToolBarBackground}">
+                <Grid.Resources>
+                    <Style TargetType="Button" x:Key="CustomtoolBarTrayBt" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                        <Setter Property="Padding" Value="6"/>
+                        <Setter Property="Foreground" Value="{StaticResource secondColorSolid}"/>
+                        <Setter Property="ToolBar.OverflowMode" Value="AsNeeded"/>
+                        <Setter Property="Opacity" Value="0.9"/>
+                    </Style>
+                    <Style TargetType="Viewbox">
+                        <Setter Property="Height" Value="35"/>
+                    </Style>
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Viewbox RenderTransformOrigin="0 0.5" HorizontalAlignment="Left">
+                    <Viewbox.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleX="1.3" ScaleY="1.3"/>
+                        </TransformGroup>
+                    </Viewbox.RenderTransform>
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Left">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button" BasedOn="{StaticResource CustomtoolBarTrayBt}"/>
+                        </StackPanel.Resources>
+
+                        <Button
+      ToolTip="Open File"
+      Click="DataLoadClick"
+      Content="{materialDesign:PackIcon Kind=FolderOpen}" />
+
+                        <Button 
+      Click="DataSaveClick"                 
+      ToolTip="Save File"
+      Content="{materialDesign:PackIcon Kind=ContentSave}" />
+                        <Button 
+      ToolTip="Open Settings"
+      Content="{materialDesign:PackIcon Kind=CogOutline}" />
+                    </StackPanel>
+                </Viewbox>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <TextBlock FontSize="15" Foreground="{StaticResource secondColorSolid}" Opacity="0.5"
+                             Text="{Binding RelativeSource={RelativeSource AncestorType=Window},Path=Title}"  
+                               >
+                    </TextBlock>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Column="2">
+                    <StackPanel.Resources>
+                        <Style TargetType="Button" BasedOn="{StaticResource CustomtoolBarTrayBt}">
+                            <Setter Property="Foreground" Value="{StaticResource secondColorSolid}"/>
+                            <Setter Property="Opacity" Value="0.9"/>
+                        </Style>
+                    </StackPanel.Resources>
+                    <Button
+                        Padding="13 4"
+                        Click="MinimizeWindow"
+                        Content="{materialDesign:PackIcon Kind=WindowMinimize}" />
+                    <Button 
+                        Padding="13 4" 
+                        Click="MaximizeWindow"
+                        Content="{StaticResource maximizeWindowIcon}" />
+                    <Button 
+                        Padding="13 4"
+                        Click="CloseWindow"
+                        Content="{materialDesign:PackIcon Kind=Close}" />
+                </StackPanel>
+            </Grid>
+            <TabControl
+                
+                Style="{StaticResource MaterialDesignNavigatilRailTabControl}">
+
+                <TabItem
+                    Header="{materialDesign:PackIcon Kind=SignDirectionPlus, Size=24}"
+                    Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                    ToolTip="Enter attack flanks"
+                    DataContext="{Binding FlanksCollection}">
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto"
+                        x:Name="flankScroller"
+                        >
+                        <DockPanel>
+
+
+
+                            <DataGrid 
+                            Mouse.PreviewMouseWheel="DataGrid_MouseWheel"
+                                Margin="0"
+                                DockPanel.Dock="Top"                                
+                                CanUserAddRows="False"
+                                AutoGenerateColumns="False"
+                                HeadersVisibility="All"
+                                ItemsSource="{Binding RelativeSource={RelativeSource Mode=Self},Path=DataContext}"
+                            >
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                    Binding="{Binding Number}"
+                                    IsReadOnly="True"           
+                                    Header="№"
+                                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" />
+
+                                    <!-- if you want to use the pop up style (MaterialDesignDataGridTextColumnPopupEditingStyle), you must use MaterialDataGridTextColumn -->
+                                    <materialDesign:DataGridTextColumn
+                                        Header="Name"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
+                                        <materialDesign:DataGridTextColumn.Binding>
+                                            <Binding
+                                                    Path="Name">
+                                                <Binding.ValidationRules>
+                                                    <ExceptionValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </materialDesign:DataGridTextColumn.Binding>
+                                    </materialDesign:DataGridTextColumn>
+                                    <!-- set a max length to get an indicator in the editor -->
+
+                                    <DataGridTextColumn
+                                        Header="Rate"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.Binding>
+                                            <Binding
+                                                Path="Rate">
+                                                <Binding.ValidationRules>
+                                                    <DataErrorValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </DataGridTextColumn.Binding>
+                                    </DataGridTextColumn>
+
+
+
+
+
+
+                                    <DataGridCheckBoxColumn
+                                          Binding="{Binding Select, UpdateSourceTrigger=PropertyChanged}"
+                                          ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                                          EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}">
+                                        <DataGridCheckBoxColumn.Header>
+                                            <Border
+                                                Background="Transparent">
+                                                <CheckBox
+                                                    DataContext="{Binding RelativeSource={RelativeSource AncestorType=DataGrid},Path=DataContext}"
+                                                    Click="CheckBoxSelectChange"
+                                                    />
+                                            </Border>
+                                        </DataGridCheckBoxColumn.Header>
+                                        <DataGridCheckBoxColumn.HeaderStyle>
+                                            <Style
+                                              TargetType="{x:Type DataGridColumnHeader}"
+                                              BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter
+                                                Property="HorizontalContentAlignment"
+                                                Value="Center" />
+                                            </Style>
+                                        </DataGridCheckBoxColumn.HeaderStyle>
+                                    </DataGridCheckBoxColumn>
+
+
+                                    <!-- use custom combo box column to get better combos. Use ItemsSourceBinding as your binding template to be applied to each combo -->
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                <Button
+  Style="{StaticResource MaterialDesignFlatButton}"
+  Content="ADD" 
+                            HorizontalAlignment="Right"
+                            Margin="0 10 -10 10"
+                            Click="AddRowClick"/>
+                                <Button
+  Style="{StaticResource MaterialDesignFlatButton}"
+  Content="DELETE" 
+                            Margin="10"
+                            Click="RemoveCheckedClick"/>
+
+                            </StackPanel>
+                        </DockPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem
+    Header="{materialDesign:PackIcon Kind=HeadPlus, Size=24}"
+    Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                    ToolTip="Enter types of defense"
+                    DataContext="{Binding TypesCollection}"
+                    >
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto"
+                        >
+
+                        <DockPanel>
+                            <DataGrid DockPanel.Dock="Top"
+                                    Mouse.PreviewMouseWheel="DataGrid_MouseWheel"    
+  x:Name="typesGrid"
+                              CanUserAddRows="False"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="All"
+                              ItemsSource="{Binding RelativeSource={RelativeSource Mode=Self},Path=DataContext}"
+                                  >
+
+                                <DataGrid.Columns>
+
+
+
+                                    <DataGridTextColumn
+                                  Binding="{Binding Number}"
+                                                            IsReadOnly="True"
+                                  Header="№"
+                                  ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                  EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}" 
+                                    />
+
+
+
+
+
+
+                                    <materialDesign:DataGridTextColumn
+                                  Header="Name"
+                                  ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                  EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnPopupEditingStyle}">
+                                        <materialDesign:DataGridTextColumn.Binding>
+                                            <Binding
+                                            Path="Name">
+                                                <Binding.ValidationRules>
+                                                    <DataErrorValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </materialDesign:DataGridTextColumn.Binding>
+                                    </materialDesign:DataGridTextColumn>
+
+                                    <DataGridTextColumn
+                                    Header="Efficiency"
+                                    ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                    EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.Binding>
+                                            <Binding
+                                                     Path="Efficiency">
+                                                <Binding.ValidationRules>
+                                                    <DataErrorValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </DataGridTextColumn.Binding>
+                                    </DataGridTextColumn>
+
+                                    <DataGridTextColumn
+                                        Header="Count"
+                                        ElementStyle="{StaticResource MaterialDesignDataGridTextColumnStyle}"
+                                        EditingElementStyle="{StaticResource MaterialDesignDataGridTextColumnEditingStyle}">
+                                        <DataGridTextColumn.Binding>
+                                            <Binding
+                                                Path="Count">
+                                                <Binding.ValidationRules>
+                                                    <ExceptionValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </DataGridTextColumn.Binding>
+                                    </DataGridTextColumn>
+
+                                    <DataGridCheckBoxColumn
+                                          Binding="{Binding Select, UpdateSourceTrigger=PropertyChanged}"
+                                          ElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnStyle}"
+                                          EditingElementStyle="{StaticResource MaterialDesignDataGridCheckBoxColumnEditingStyle}"
+                                        
+                                        >
+                                        <DataGridCheckBoxColumn.Header>
+                                            <Border
+                                                Background="Transparent">
+                                                <CheckBox
+                                                    x:Name="fkcheckbox"
+                                                    Click="CheckBoxSelectChange"
+                                                    />
+                                            </Border>
+                                        </DataGridCheckBoxColumn.Header>
+                                        <DataGridCheckBoxColumn.HeaderStyle>
+                                            <Style
+                                              TargetType="{x:Type DataGridColumnHeader}"
+                                              BasedOn="{StaticResource MaterialDesignDataGridColumnHeader}">
+                                                <Setter
+                                                Property="HorizontalContentAlignment"
+                                                Value="Center" />
+                                            </Style>
+                                        </DataGridCheckBoxColumn.HeaderStyle>
+                                    </DataGridCheckBoxColumn>
+
+                                </DataGrid.Columns>
+                            </DataGrid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                                <Button
+  Style="{StaticResource MaterialDesignFlatButton}"
+  Content="ADD" 
+                            HorizontalAlignment="Right"
+                            Margin="0 10 -10 10"
+                            Click="AddRowClick"/>
+                                <Button
+  Style="{StaticResource MaterialDesignFlatButton}"
+  Content="DELETE" 
+                            Margin="10"
+                            Click="RemoveCheckedClick"/>
+
+                            </StackPanel>
+                        </DockPanel>
+                    </ScrollViewer>
+                </TabItem>
+                <TabItem
+    Header="{materialDesign:PackIcon Kind=Calculator, Size=24}"
+    Style="{StaticResource MaterialDesignNavigationRailTabItem}"
+                    ToolTip="Get the result" >
+                    <ScrollViewer
+                        VerticalScrollBarVisibility="Auto">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Top"
+                                        Visibility="{Binding isCalculated, Converter={StaticResource visibleConverter}}"
+                                        Style="{StaticResource smoothVisible}"
+                                        >
+                                <DockPanel Margin="0 0 0 7" DataContext="{Binding AttackForce}">
+                                    <TextBox
+                                        Margin="20 0 0 0"
+  materialDesign:HintAssist.Hint="Enter attack forces count"
+  Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+  VerticalAlignment="Center">
+                                        <TextBox.Text>
+                                            <Binding Path="Force">
+                                                <Binding.ValidationRules>
+                                                    <DataErrorValidationRule />
+                                                </Binding.ValidationRules>
+                                            </Binding>
+                                        </TextBox.Text>
+                                    </TextBox>
+                                    <Button
+  Style="{StaticResource MaterialDesignFloatingActionMiniDarkButton}"
+  ToolTip="Get assured result"
+                                        Click="Button_Click_2"
+                                        materialDesign:ButtonProgressAssist.IsIndicatorVisible="False"
+                                        materialDesign:ButtonProgressAssist.Value="-1"
+                                        materialDesign:ButtonProgressAssist.IsIndeterminate="False"
+                                        Background="Transparent"
+                                        BorderBrush="Transparent"
+                                        Margin="10 15 0 0">
+                                        <materialDesign:PackIcon
+    Kind="Play" />
+                                    </Button>
+                                    <TextBlock 
+                                        HorizontalAlignment="Right" Margin="0 30 50 0"
+                                        ToolTip="The minimum count of attack forces&#10;who break through or assured result"
+                                        Text="{Binding Result, Converter={StaticResource roundConverter}}"
+                                        />
+                                </DockPanel>
+                                <local:DataTable
+                                    DataContext="{Binding ResultCollection}"
+                                    TableSource="{Binding TableViewSource}"
+                                    ColumnCount="{Binding TableColumn}"
+                                    RowCount="{Binding TableRow}"
+                                    ColumnStyle="{StaticResource columndataitem}"
+                                    DataStyle="{StaticResource dataitem}"
+                                    RowStyle="{StaticResource rowdataitem}"
+                                    ZeroStyle="{StaticResource zerodataitem}"
+                            DockPanel.Dock="Top"
+                            >
+                                </local:DataTable>
+                            </StackPanel>
+                            <Grid 
+                                Width="124"
+                                Margin="20"
+                            >
+                                <Button 
+                                Style="{StaticResource MaterialDesignRaisedButton}"
+                                materialDesign:ButtonProgressAssist.Value="-1"
+                                materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
+                                materialDesign:ButtonProgressAssist.IsIndeterminate="False"
+                                Content="Calculate"
+                                Click="CalcClick"
+                                Margin="2,0" />
+                            </Grid>
+                        </DockPanel>
+                    </ScrollViewer>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </Grid>
+</Window>
